@@ -1,4 +1,4 @@
-# teststash-logger
+# Teststash-logger
 - To use this just edit your build.sbt as follows:
 ```
 libraryDependencies ++= Seq(
