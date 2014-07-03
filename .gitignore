@@ -5,7 +5,7 @@
 .idea/
 
 # sbt specific
-secret.sbt
+local.*
 .cache/
 .history/
 .lib/
