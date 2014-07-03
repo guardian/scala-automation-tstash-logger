@@ -5,7 +5,7 @@ import sbt.Keys._
 import sbtrelease.ReleaseStateTransformations._
 import sbtrelease._
 
-name := "teststash-logger"
+name := "scala-automation-tstash-logger"
 
 organization := "com.gu"
 
@@ -27,15 +27,15 @@ releaseSettings
 
 sonatypeSettings
 
-description := "Scala client for the Guardian's Content API"
+description := "logger to send things to tstash server from scala-automation tests"
 
 scmInfo := Some(ScmInfo(
-  url("https://github.com/guardian/scala-automation/modules/tstash-logger"),
-  "scm:git:git@github.com:guardian/scala-automation.git"
+  url("https://github.com/guardian/scala-automation-tstash-logger"),
+  "scm:git:git@github.com:guardian/scala-automation-tstash-logger.git"
 ))
 
 pomExtra := (
-  <url>https://github.com/guardian/scala-automation</url>
+  <url>https://github.com/guardian/scala-automation-tstash-logger</url>
     <developers>
       <developer>
         <id>johnduffell</id>
@@ -61,7 +61,7 @@ ReleaseKeys.releaseProcess := Seq[ReleaseStep](
   runTest,
   setReleaseVersion,
   commitReleaseVersion,
-//  tagRelease,
+  tagRelease,
   ReleaseStep( // instead of publishArtifacts
     action = state => Project.extract(state).runTask(PgpKeys.publishSigned, state)._1,
     enableCrossBuild = true
