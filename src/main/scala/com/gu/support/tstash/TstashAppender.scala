@@ -49,7 +49,7 @@ class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
       .addQueryParameter("testDate", eventObject.getMDCPropertyMap.get("testDate"))
       .addQueryParameter("setName", eventObject.getMDCPropertyMap.get("setName"))
       .addQueryParameter("setDate", eventObject.getMDCPropertyMap.get("setDate"))
-      .setBody(new File("ss.png"))
+      .setBody(eventObject.getArgumentArray()(0).asInstanceOf[Array[Byte]])
       .build()
 
     HttpClient.httpClient.executeRequest(request)

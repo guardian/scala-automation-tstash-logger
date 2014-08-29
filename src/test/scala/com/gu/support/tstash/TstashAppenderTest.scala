@@ -4,6 +4,8 @@ import java.util.UUID
 
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.joda.time.DateTime
+import org.openqa.selenium.OutputType
+import org.openqa.selenium.firefox.FirefoxDriver
 import org.scalatest._
 import org.slf4j.MDC
 
@@ -42,8 +44,11 @@ class TstashAppenderTest extends FlatSpec with Matchers with LazyLogging {
     logger.info("[TEST START]")
     logger.info("Test message 1111.")
     logger.info("Test message 2222222.")
+    val driver = new FirefoxDriver()
+    driver.get("http://www.google.com")
     logger.info("[FAILED]Element not found on page.")
-    logger.info("[SCREENSHOT]")
+    logger.info("[SCREENSHOT]", driver.getScreenshotAs(OutputType.BYTES))
+    driver.quit()
     logger.info("[TEST END]")
 
   }

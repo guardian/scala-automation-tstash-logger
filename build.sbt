@@ -17,7 +17,8 @@ resolvers ++= Seq(
 )
 
 libraryDependencies ++= Seq(
-  "org.scalatest" % "scalatest_2.10" % "2.0",
+  "org.scalatest" %% "scalatest" % "2.0",
+  "org.seleniumhq.selenium" % "selenium-java" % "2.42.0",
   "com.typesafe.play" %% "play-ws" % "2.3.0",
   "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2",
   "ch.qos.logback" % "logback-classic" % "1.1.2"
