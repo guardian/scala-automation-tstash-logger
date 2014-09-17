@@ -1,13 +1,11 @@
 package com.gu.automation.api
 
-import java.io.File
-
-import scala.collection.mutable
-
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.UnsynchronizedAppenderBase
 import com.gu.support.tstash.HttpClient
 import com.ning.http.client.websocket.{WebSocket, WebSocketTextListener, WebSocketUpgradeHandler}
+
+import scala.collection.mutable
 
 object TstashAppender {
   val sockets = mutable.Map[String, WebSocket]()

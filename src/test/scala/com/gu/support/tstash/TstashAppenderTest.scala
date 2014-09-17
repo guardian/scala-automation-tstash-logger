@@ -9,9 +9,6 @@ import org.openqa.selenium.firefox.FirefoxDriver
 import org.scalatest._
 import org.slf4j.MDC
 
-import scala.concurrent.Await
-import scala.concurrent.duration._
-
 class TstashAppenderTest extends FlatSpec with Matchers with LazyLogging {
 
   "The auth api" should "let us log in as a valid user" in {
