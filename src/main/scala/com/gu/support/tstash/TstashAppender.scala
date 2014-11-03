@@ -46,8 +46,8 @@ class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
       .build()
     val result = HttpClient.httpClient.executeRequest(request).get(15, TimeUnit.SECONDS)
     if (result.getStatusCode != 200) {
-      println(result.getStatusText)
-      println(result.getResponseBody)
+      println(s"[TSTASH-Logger] Could not report test message for test: ${eventObject.getMDCPropertyMap.get("testName")}")
+      //println(result.getStatusText); println(result.getResponseBody)
     }
   }
 
@@ -61,8 +61,8 @@ class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
       .build()
     val result = HttpClient.httpClient.executeRequest(request).get(15, TimeUnit.SECONDS)
     if (result.getStatusCode != 200) {
-      println(result.getStatusText)
-      println(result.getResponseBody)
+      println(s"[TSTASH-Logger] Could not report test screen shot for test: ${eventObject.getMDCPropertyMap.get("testName")}")
+      //println(result.getStatusText); println(result.getResponseBody)
     }
   }
 
