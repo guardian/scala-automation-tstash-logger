@@ -19,6 +19,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.1.2",
   "com.ning" % "async-http-client" % "1.8.13",
+  "com.typesafe.play" %% "play-json" % "2.4.0-M1",
   "org.scalatest" %% "scalatest" % "2.0" % "test",
   "joda-time" % "joda-time" % "2.4" % "test",
   "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2" % "test",

@@ -43,7 +43,16 @@ class TstashAppenderTest extends FlatSpec with Matchers with LazyLogging {
     Thread.sleep(1000)
     logger.info("Test message 2.")
     logger.info("Test message 4.")
-    logger.info("[FAILED]Element not found on page.")
+    logger.info("""[FAILED]no such element
+                  |  (Session info: chrome=38.0.2125.111)
+                  |  (Driver info: chromedriver=2.11.298611 (d1120fdf51badec2f7b63a96e19a58d4783de84d),platform=Mac OS X 10.10.0 x86_64) (WARNING: The server did not provide any stacktrace information)
+                  |Command duration or timeout: 25.06 seconds
+                  |For documentation on this error, please visit: http://seleniumhq.org/exceptions/no_such_element.html
+                  |Build info: version: '2.43.1', revision: '5163bceef1bc36d43f3dc0b83c88998168a363a0', time: '2014-09-10 09:43:55'
+                  |System info: host: 'tizona', ip: '10.233.72.160', os.name: 'Mac OS X', os.arch: 'x86_64', os.version: '10.10', java.version: '1.8.0_20'
+                  |Driver info: org.openqa.selenium.chrome.ChromeDriver
+                  |Capabilities [{applicationCacheEnabled=false, rotatable=false, mobileEmulationEnabled=false, chrome={userDataDir=/var/folders/mq/t6c1chcd0dv7f79bv9p4vgr00000gn/T/.org.chromium.Chromium.Kok2dO}, takesHeapSnapshot=true, databaseEnabled=false, handlesAlerts=true, version=38.0.2125.111, platform=MAC, browserConnectionEnabled=false, nativeEvents=true, acceptSslCerts=true, locationContextEnabled=true, webStorageEnabled=true, browserName=chrome, takesScreenshot=true, javascriptEnabled=true, cssSelectorsEnabled=true}]
+                  |Session ID: 4c3cdd37f8c926d92254d33bbdb03563""")
   }
 
 //  "The auth api " should "let us log in as a valid user - Screen Shot" in {

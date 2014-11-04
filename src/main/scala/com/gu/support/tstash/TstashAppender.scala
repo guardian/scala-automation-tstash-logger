@@ -6,6 +6,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.UnsynchronizedAppenderBase
 import com.gu.support.tstash.HttpClient
 import com.ning.http.client.websocket.WebSocket
+import play.api.libs.json.Json
 
 import scala.collection.mutable
 
@@ -16,7 +17,7 @@ object TstashAppender {
 class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
 
   override def append(eventObject: ILoggingEvent): Unit = {
-    val failed = """\[FAILED\](.*)""".r
+    val failed = """(?s)\[FAILED\](.*)""".r
 
     eventObject.getMessage match {
       case failed(m) => sendError(eventObject, m)
@@ -26,28 +27,36 @@ class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
   }
 
   private def sendMessage(eventObject: ILoggingEvent): Unit = {
-    sendJson(eventObject, s""""message":"${eventObject.getFormattedMessage}"""")
+    val json = Json.obj(
+      "testName" -> eventObject.getMDCPropertyMap.get("testName"),
+      "testDate" -> eventObject.getMDCPropertyMap.get("testDate"),
+      "setName" -> eventObject.getMDCPropertyMap.get("setName"),
+      "setDate" -> eventObject.getMDCPropertyMap.get("setDate"),
+      "message" -> eventObject.getFormattedMessage
+    ).toString()
+    sendJson(eventObject, json)
   }
 
   private def sendError(eventObject: ILoggingEvent, error: String): Unit = {
-    sendJson(eventObject, s""""error":"${error}"""")
+    val json = Json.obj(
+      "testName" -> eventObject.getMDCPropertyMap.get("testName"),
+      "testDate" -> eventObject.getMDCPropertyMap.get("testDate"),
+      "setName" -> eventObject.getMDCPropertyMap.get("setName"),
+      "setDate" -> eventObject.getMDCPropertyMap.get("setDate"),
+      "error" -> error
+    ).toString()
+    sendJson(eventObject, json)
   }
 
   private def sendJson(eventObject: ILoggingEvent, body: String): Unit = {
     val request = HttpClient.httpClient.preparePost(HttpClient.urlReport)
       .addHeader("Content-Type", "application/json")
-      .setBody(s"""{
-         |"testName":"${eventObject.getMDCPropertyMap.get("testName")}",
-         |"testDate":"${eventObject.getMDCPropertyMap.get("testDate")}",
-         |"setName":"${eventObject.getMDCPropertyMap.get("setName")}",
-         |"setDate":"${eventObject.getMDCPropertyMap.get("setDate")}",
-         |${body}
-         |}""".stripMargin)
+      .setBody(body)
       .build()
     val result = HttpClient.httpClient.executeRequest(request).get(15, TimeUnit.SECONDS)
     if (result.getStatusCode != 200) {
       println(s"[TSTASH-Logger] Could not report test message for test: ${eventObject.getMDCPropertyMap.get("testName")}")
-      //println(result.getStatusText); println(result.getResponseBody)
+//      println(result.getStatusText); println(result.getResponseBody)
     }
   }
 
@@ -62,7 +71,7 @@ class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
     val result = HttpClient.httpClient.executeRequest(request).get(15, TimeUnit.SECONDS)
     if (result.getStatusCode != 200) {
       println(s"[TSTASH-Logger] Could not report test screen shot for test: ${eventObject.getMDCPropertyMap.get("testName")}")
-      //println(result.getStatusText); println(result.getResponseBody)
+//      println(result.getStatusText); println(result.getResponseBody)
     }
   }
 
