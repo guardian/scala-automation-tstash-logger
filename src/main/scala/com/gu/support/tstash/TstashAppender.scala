@@ -1,11 +1,10 @@
-package com.gu.automation.api
+package com.gu.support.tstash
 
 import java.io.File
 import java.util.concurrent.TimeUnit
 
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.UnsynchronizedAppenderBase
-import com.gu.support.tstash.HttpClient
 import com.ning.http.client.websocket.WebSocket
 import play.api.libs.json.Json
 
@@ -67,12 +66,21 @@ class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
       .addQueryParameter("testDate", eventObject.getMDCPropertyMap.get("testDate"))
       .addQueryParameter("setName", eventObject.getMDCPropertyMap.get("setName"))
       .addQueryParameter("setDate", eventObject.getMDCPropertyMap.get("setDate"))
-      .setBody(eventObject.getArgumentArray()(0).asInstanceOf[File])
+      .setBody(getScreenShot(eventObject))
       .build()
     val result = HttpClient.httpClient.executeRequest(request).get(15, TimeUnit.SECONDS)
     if (result.getStatusCode != 200) {
       println(s"[TSTASH-Logger] Could not report test screen shot for test: ${eventObject.getMDCPropertyMap.get("testName")}")
 //      println(result.getStatusText); println(result.getResponseBody)
+    }
+  }
+
+  private def getScreenShot(eventObject: ILoggingEvent) = {
+    if (eventObject.getArgumentArray()(0).isInstanceOf[File]) {
+      eventObject.getArgumentArray()(0).asInstanceOf[File]
+    } else {
+      // scala logging framework implementation specific
+      eventObject.getArgumentArray()(0).asInstanceOf[scala.collection.mutable.WrappedArray[_]].head.asInstanceOf[File]
     }
   }
 
