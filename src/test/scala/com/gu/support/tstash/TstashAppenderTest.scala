@@ -71,7 +71,7 @@ class TstashAppenderTest extends FlatSpec with Matchers with LazyLogging {
 //    val driver = new FirefoxDriver()
 //    driver.get("http://www.google.com")
 //    logger.info("[FAILED]Element not found on page.")
-//    logger.info("[SCREENSHOT]", driver.getScreenshotAs(OutputType.BYTES))
+//    logger.info("[SCREENSHOT]", driver.getScreenshotAs(OutputType.FILE))
 //    driver.quit()
 //
 //  }

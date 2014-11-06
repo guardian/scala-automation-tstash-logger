@@ -1,5 +1,6 @@
 package com.gu.automation.api
 
+import java.io.File
 import java.util.concurrent.TimeUnit
 
 import ch.qos.logback.classic.spi.ILoggingEvent
@@ -66,7 +67,7 @@ class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
       .addQueryParameter("testDate", eventObject.getMDCPropertyMap.get("testDate"))
       .addQueryParameter("setName", eventObject.getMDCPropertyMap.get("setName"))
       .addQueryParameter("setDate", eventObject.getMDCPropertyMap.get("setDate"))
-      .setBody(eventObject.getArgumentArray()(0).asInstanceOf[Array[Byte]])
+      .setBody(eventObject.getArgumentArray()(0).asInstanceOf[File])
       .build()
     val result = HttpClient.httpClient.executeRequest(request).get(15, TimeUnit.SECONDS)
     if (result.getStatusCode != 200) {
