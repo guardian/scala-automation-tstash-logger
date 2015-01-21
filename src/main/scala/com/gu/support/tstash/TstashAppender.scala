@@ -20,12 +20,13 @@ class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
 
   override def append(eventObject: ILoggingEvent): Unit = {
     val failed = """(?s)\[FAILED\](.*)""".r
+    val urlExtractor = """(?s)\[URL\](.*)""".r
 
     eventObject.getMessage match {
+      case urlExtractor(url) => sendHTMLFile(url)
       case failed(m) => sendError(eventObject, m)
       case "[SCREENSHOT]" => sendScreenShot(eventObject)
       case _ => sendMessage(eventObject)
-      case "[URL]" => sendHTMLFile(eventObject)
     }
   }
 
@@ -63,8 +64,7 @@ class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
     }
   }
 
-  private def sendHTMLFile(eventObject: ILoggingEvent): Unit = {
-    val tstashURL = eventObject.toString.drop(5)
+  def sendHTMLFile(tstashURL: String): Unit = {
     val tstashSet = s"<html><body><a href='$tstashURL'>Test report</a></body></html>"
     Files.write(Paths.get("TstashReport.html"), tstashSet.getBytes(StandardCharsets.UTF_8))
   }
