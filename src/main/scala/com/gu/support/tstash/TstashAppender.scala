@@ -1,6 +1,8 @@
 package com.gu.support.tstash
 
 import java.io.File
+import java.nio.charset.StandardCharsets
+import java.nio.file.{Paths, Files}
 import java.util.concurrent.TimeUnit
 
 import ch.qos.logback.classic.spi.ILoggingEvent
@@ -18,8 +20,10 @@ class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
 
   override def append(eventObject: ILoggingEvent): Unit = {
     val failed = """(?s)\[FAILED\](.*)""".r
+    val urlExtractor = """(?s)\[URL\](.*)""".r
 
     eventObject.getMessage match {
+      case urlExtractor(url) => sendHTMLFile(url)
       case failed(m) => sendError(eventObject, m)
       case "[SCREENSHOT]" => sendScreenShot(eventObject)
       case _ => sendMessage(eventObject)
@@ -58,6 +62,11 @@ class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
       println(s"[TSTASH-Logger] Could not report test message for test: ${eventObject.getMDCPropertyMap.get("testName")}")
 //      println(result.getStatusText); println(result.getResponseBody)
     }
+  }
+
+  def sendHTMLFile(tstashURL: String): Unit = {
+    val tstashSet = s"<html><body><a href='$tstashURL'>Test report</a></body></html>"
+    Files.write(Paths.get("TstashReport.html"), tstashSet.getBytes(StandardCharsets.UTF_8))
   }
 
   private def sendScreenShot(eventObject: ILoggingEvent): Unit = {
