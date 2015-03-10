@@ -66,7 +66,13 @@ class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
 
   def sendHTMLFile(tstashURL: String, testId: String): Unit = {
     val tstashReportHtml = s"<html><head><meta <meta http-equiv='refresh' content='0; url=$tstashURL' /></head><body><a href='$tstashURL'>Test report</a></body></html>"
-    Files.write(Paths.get(s"TstashReport-$testId.html"), tstashReportHtml.getBytes(StandardCharsets.UTF_8))
+    if (testId.startsWith("Some")) {
+      val testIdCut = testId.drop(5).dropRight(1)
+      Files.write(Paths.get(s"TstashReport-$testIdCut.html"), tstashReportHtml.getBytes(StandardCharsets.UTF_8))
+    }
+    else {
+      Files.write(Paths.get(s"TstashReport.html"), tstashReportHtml.getBytes(StandardCharsets.UTF_8))
+    }
   }
 
   private def sendScreenShot(eventObject: ILoggingEvent): Unit = {
