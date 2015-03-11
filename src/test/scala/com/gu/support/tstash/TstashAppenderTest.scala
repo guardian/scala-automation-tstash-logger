@@ -1,13 +1,19 @@
 package com.gu.automation.api
 
+import java.util
 import java.util.UUID
 
+import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.spi.{LoggerContextVO, IThrowableProxy, ILoggingEvent}
+import com.gu.support.tstash.TstashAppender
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.joda.time.DateTime
 import org.openqa.selenium.OutputType
 import org.openqa.selenium.firefox.FirefoxDriver
 import org.scalatest._
-import org.slf4j.MDC
+import org.slf4j.{Marker, MDC}
+
+import scala.None
 
 class TstashAppenderTest extends FlatSpec with Matchers with LazyLogging {
 
@@ -76,8 +82,60 @@ class TstashAppenderTest extends FlatSpec with Matchers with LazyLogging {
 //
 //  }
 
+  "TestInfo with testID" should "produce correct filename" in {
+    val eventObject = new eventObject("[StartInfo] www.test.com testId")
+    val appender = new TstashAppender
+    val message = appender.prepareMessageReaction(eventObject)
+    message shouldNot be (None)
+    message.get._2 shouldNot be ("")
+    message.get._1 shouldBe ("TstashReport-testId.html")
+  }
+
+  "TestInfo with no testId" should "produce correct filename" in {
+    val eventObject = new eventObject("[StartInfo] www.test.com ")
+    val appender = new TstashAppender
+    val message = appender.prepareMessageReaction(eventObject)
+    message shouldNot be (None)
+    message.get._2 shouldNot be ("")
+    message.get._1 shouldBe ("TstashReport.html")
+  }
+
 }
 
 object SetTime {
   val time = DateTime.now
+}
+
+case class eventObject(message: String) extends ILoggingEvent {
+
+  override def getThreadName: String = ???
+
+  override def getLoggerName: String = ???
+
+  override def getFormattedMessage: String = ???
+
+  override def getMessage: String = message
+
+  override def getLoggerContextVO: LoggerContextVO = ???
+
+  override def getLevel: Level = ???
+
+  override def getTimeStamp: Long = ???
+
+  override def getCallerData: Array[StackTraceElement] = ???
+
+  override def hasCallerData: Boolean = ???
+
+  override def getMDCPropertyMap: util.Map[String, String] = ???
+
+  override def getMdc: util.Map[String, String] = ???
+
+  override def getArgumentArray: Array[AnyRef] = ???
+
+  override def getMarker: Marker = ???
+
+  override def getThrowableProxy: IThrowableProxy = ???
+
+  override def prepareForDeferredProcessing(): Unit = ???
+
 }

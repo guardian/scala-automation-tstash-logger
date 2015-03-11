@@ -19,14 +19,25 @@ object TstashAppender {
 class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
 
   override def append(eventObject: ILoggingEvent): Unit = {
-    val failed = """(?s)\[FAILED\](.*)""".r
-    val urlExtractor = """(?s)\[URL\](.*)""".r
+    prepareMessageReaction(eventObject) match {
+      case Some((name, content)) => Files.write(Paths.get(name), content.getBytes(StandardCharsets.UTF_8))
+    }
+  }
 
-    eventObject.getMessage match {
-      case urlExtractor(url) => sendHTMLFile(url)
-      case failed(m) => sendError(eventObject, m)
-      case "[SCREENSHOT]" => sendScreenShot(eventObject)
-      case _ => sendMessage(eventObject)
+  def prepareMessageReaction(eventObject: ILoggingEvent): Option[(String, String)] ={
+    val failed = """(?s)\[FAILED\](.*)""".r
+    val urlExtractor = """(?s)\[StartInfo\](.+) (.+)""".r
+    val urlExtractorWithNoName = """(?s)\[StartInfo\](.*)""".r
+
+    eventObject.getMessage() match {
+      case urlExtractor(url, testId) => Some(sendHTMLFile(url, Some(testId)))
+      case urlExtractorWithNoName(url) => Some(sendHTMLFile(url, None))
+      case failed(m) => {sendError(eventObject, m)
+        None}
+      case "[SCREENSHOT]" => {sendScreenShot(eventObject)
+        None}
+      case _ => {sendMessage(eventObject)
+        None}
     }
   }
 
@@ -64,9 +75,17 @@ class TstashAppender extends UnsynchronizedAppenderBase[ILoggingEvent] {
     }
   }
 
-  def sendHTMLFile(tstashURL: String): Unit = {
+  def sendHTMLFile(tstashURL: String, testId: Option[String]): (String, String) = {
     val tstashReportHtml = s"<html><head><meta <meta http-equiv='refresh' content='0; url=$tstashURL' /></head><body><a href='$tstashURL'>Test report</a></body></html>"
-    Files.write(Paths.get("TstashReport.html"), tstashReportHtml.getBytes(StandardCharsets.UTF_8))
+    (generateHTMLFileName(tstashURL, testId),tstashReportHtml)
+  }
+
+  def generateHTMLFileName(tstashURL: String, testId: Option[String]): String = {
+    val filename = testId match {
+      case Some(testId) => s"TstashReport-$testId.html"
+      case None => "TstashReport.html"
+    }
+    filename
   }
 
   private def sendScreenShot(eventObject: ILoggingEvent): Unit = {
